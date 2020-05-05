@@ -17,3 +17,4 @@ def getSpreadsheet(spreadsheetUrl,sheetName):
     frame=frame.dropna(axis='columns',how='all')
     return frame
 
+
