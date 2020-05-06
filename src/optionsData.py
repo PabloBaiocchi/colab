@@ -33,7 +33,7 @@ def getOptionsData(soup):
     return dataRows
 
 def getStockPrice(soup):
-    tag=soup.find('span',{'data-field':'UltimoPrecio'})
+    tag=soup.find_all('span',{'data-field':'UltimoPrecio'})
     return float(tag.text.replace(',','.'))
 
 def writeOptionsCsv(price,optionsData,filePath):

@@ -1,3 +1,8 @@
+import datetime as dt
+
+from config import optionExpirationDates
+from shared import firstLastDigit
+
 def callProfit(spotPrice,strikePrice,optionPremium):
     if spotPrice>strikePrice:
       return spotPrice-strikePrice-optionPremium
@@ -30,13 +35,35 @@ def profitFunction(strikePrice,optionPremium,oType):
     if oType=='put':
         return putProfitFunction(strikePrice,optionPremium)
 
-def constant(constantValue):
-    def constantFunction(spotPrice):
-        return constantValue
-    return constantFunction
+def callBreakEven(strikePrice,premium):
+  return strikePrice+premium
 
-def apply(profitFunction,spotPrices):
-    profits=[]
-    for spotPrice in spotPrices:
-        profits.append(profitFunction(spotPrice))
-    return profits
+def putBreakEven(strikePrice,premium):
+  return strikePrice-premium
+
+def getBreakEven(strikePrice,premium,oType):
+  if oType=='call':
+    return callBreakEven(strikePrice,premium)
+  if oType=='put':
+    return putBreakEven(strikePrice,premium)
+
+def getExpirationDate(optionName):
+  month=optionName[-2:]
+  return dt.datetime.strptime(optionExpirationDates[month],'%Y-%m-%d')
+
+def getStrikePrice(optionName):
+  firstDigitIndex, lastDigitIndex=firstLastDigit(optionName)
+  return float(optionName[firstDigitIndex:lastDigitIndex+1])
+
+def getType(optionName):
+  indexes=firstLastDigit(optionName)
+  if optionName[indexes[0]-1]=='C':
+    return 'call'
+  if optionName[indexes[0]-1]=='V':
+    return 'put'
+
+def fillOut(optionsDf):
+  optionsDf['exp_date']=optionsDf.name.apply(lambda x:getExpirationDate(x))
+  optionsDf['strike_price']=optionsDf.name.apply(lambda x:getStrikePrice(x))
+  optionsDf['type']=optionsDf.name.apply(lambda x:getType(x))
+  optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
