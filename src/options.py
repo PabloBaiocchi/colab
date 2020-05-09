@@ -35,6 +35,11 @@ def profitFunction(strikePrice,optionPremium,oType):
     if oType=='put':
         return putProfitFunction(strikePrice,optionPremium)
 
+def nyPriceFunction(ratio,baPrice):
+  def function(ccl):
+    return baPrice*ratio/ccl
+  return function
+
 def callBreakEven(strikePrice,premium):
   return strikePrice+premium
 
