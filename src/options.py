@@ -72,3 +72,4 @@ def fillOut(optionsDf):
   optionsDf['strike_price']=optionsDf.name.apply(lambda x:getStrikePrice(x))
   optionsDf['type']=optionsDf.name.apply(lambda x:getType(x))
   optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
+  optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
