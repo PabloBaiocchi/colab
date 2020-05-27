@@ -1,3 +1,5 @@
+import datetime as dt
+
 def constantFunction(constantValue):
     def function(value):
         return constantValue
@@ -19,3 +21,7 @@ def firstLastDigit(myString):
       else:
         lastInstance=i
   return firstInstance,lastInstance
+
+def splitDatetime(df):
+  df['date']=df.datetime.apply(lambda timestamp: timestamp.date())
+  df['minutes']=df.datetime.apply(lambda timestamp: timestamp.hour*60+timestamp.minute)

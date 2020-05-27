@@ -1,7 +1,7 @@
 import datetime as dt
 
 from config import optionExpirationDates
-from util import firstLastDigit
+from util import firstLastDigit, parseDate, parseTime
 
 def callProfit(spotPrice,strikePrice,optionPremium):
     if spotPrice>strikePrice:
@@ -73,3 +73,5 @@ def fillOut(optionsDf):
   optionsDf['type']=optionsDf.name.apply(lambda x:getType(x))
   optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
   optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
+  optionsDf['datetime']=optionsDf.datetime.apply(lambda datestring: dt.datetime.strptime(datestring[:datestring.rindex(':')],'%Y-%m-%d %H:%M'))
+
