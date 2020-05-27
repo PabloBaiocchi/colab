@@ -1,7 +1,7 @@
 import datetime as dt
 
 from config import optionExpirationDates
-from util import firstLastDigit, parseDate, parseTime
+from util import firstLastDigit
 
 def callProfit(spotPrice,strikePrice,optionPremium):
     if spotPrice>strikePrice:
