@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from config import optionExpirationDates
-from util import firstLastDigit,apply,constantFunction
+from util import firstLastDigit,apply,constantFunction,merge
 
 def callProfit(spotPrice,strikePrice,optionPremium,percent=False):
     profit=0
@@ -105,4 +105,29 @@ def graph(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
   plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
   
   plt.legend()
+  plt.grid()
+
+def graphCombined(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
+  plt.figure(figsize=figsize)
+
+  spotPrices=np.linspace(start,stop,stop-start)
+  grossProfit=[0] * len(spotPrices)
+  totalPremium=0
+
+  for row in optionsDf.iterrows():
+    strikePrice=row[1].strike_price
+    premium=row[1].premium
+    totalPremium=totalPremium+premium
+    oType=row[1].type
+    profitFunc=profitFunction(strikePrice,premium,oType)
+    optionProfit=apply(profitFunc,spotPrices)
+    grossProfit=merge(grossProfit,optionProfit)
+  
+  if percent:
+    grossProfit=np.array(grossProfit)
+    plt.plot(spotPrices,grossProfit/totalPremium)
+  else:
+    plt.plot(spotPrices,grossProfit)
+  plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
+
   plt.grid()
