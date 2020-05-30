@@ -3,37 +3,47 @@ import datetime as dt
 from config import optionExpirationDates
 from util import firstLastDigit
 
-def callProfit(spotPrice,strikePrice,optionPremium):
+def callProfit(spotPrice,strikePrice,optionPremium,percent=False):
+    profit=0
     if spotPrice>strikePrice:
-      return spotPrice-strikePrice-optionPremium
-    return -optionPremium
+      profit=spotPrice-strikePrice-optionPremium
+    profit=-optionPremium
+    if percent:
+      return profit/optionPremium
+    return profit
 
-def putProfit(spotPrice,strikePrice,optionPremium):
+def putProfit(spotPrice,strikePrice,optionPremium,percent=False):
+    profit=0
     if spotPrice<strikePrice:
-      return strikePrice-spotPrice-optionPremium
-    return -optionPremium 
+      profit=strikePrice-spotPrice-optionPremium
+    else:
+      profit=-optionPremium 
+    if percent:
+      return profit/optionPremium
+    return profit
+    
 
-def optionProfit(spotPrice,strikePrice,premium,oType):
+def optionProfit(spotPrice,strikePrice,premium,oType,percent=False):
   if oType=='call':
-    return callProfit(spotPrice,strikePrice,premium)
+    return callProfit(spotPrice,strikePrice,premium,percent)
   if oType=='put':
-    return putProfit(spotPrice,strikePrice,premium)
+    return putProfit(spotPrice,strikePrice,premium,percent)
 
-def callProfitFunction(strikePrice,optionPremium):
+def callProfitFunction(strikePrice,optionPremium,percent=False):
     def func(spotPrice):
-        return callProfit(spotPrice,strikePrice,optionPremium)
+        return callProfit(spotPrice,strikePrice,optionPremium,percent)
     return func
 
-def putProfitFunction(strikePrice,optionPremium):
+def putProfitFunction(strikePrice,optionPremium,percent=False):
     def func(spotPrice):
-        return putProfit(spotPrice,strikePrice,optionPremium)
+        return putProfit(spotPrice,strikePrice,optionPremium,percent)
     return func
 
-def profitFunction(strikePrice,optionPremium,oType):
+def profitFunction(strikePrice,optionPremium,oType,percent=False):
     if oType=='call':
-        return callProfitFunction(strikePrice,optionPremium)
+        return callProfitFunction(strikePrice,optionPremium,percent)
     if oType=='put':
-        return putProfitFunction(strikePrice,optionPremium)
+        return putProfitFunction(strikePrice,optionPremium,percent)
 
 def nyPriceFunction(ratio,baPrice):
   def function(ccl):
@@ -74,4 +84,3 @@ def fillOut(optionsDf):
   optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
   optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
   optionsDf['datetime']=optionsDf.datetime.apply(lambda datestring: dt.datetime.strptime(datestring[:datestring.rindex(':')],'%Y-%m-%d %H:%M'))
-
