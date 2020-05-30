@@ -1,7 +1,9 @@
 import datetime as dt
+import matplotlib.pyplot as plt
+import numpy as np
 
 from config import optionExpirationDates
-from util import firstLastDigit
+from util import firstLastDigit,apply,constantFunction
 
 def callProfit(spotPrice,strikePrice,optionPremium,percent=False):
     profit=0
@@ -84,3 +86,22 @@ def fillOut(optionsDf):
   optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
   optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
   optionsDf['datetime']=optionsDf.datetime.apply(lambda datestring: dt.datetime.strptime(datestring[:datestring.rindex(':')],'%Y-%m-%d %H:%M'))
+
+def graph(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
+  plt.figure(figsize=figsize)
+
+  spotPrices=np.linspace(start,stop,stop-start)
+
+  for row in optionsDf.iterrows():
+    strikePrice=row[1].strike_price
+    premium=row[1].premium
+    oType=row[1].type
+    name=row[1][0]
+    profitFunc=profitFunction(strikePrice,premium,oType,percent)
+    profit=apply(profitFunc,spotPrices)
+    plt.plot(spotPrices,profit,label=name)
+  
+  plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
+  
+  plt.legend()
+  plt.grid()
