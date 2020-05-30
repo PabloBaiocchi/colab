@@ -9,7 +9,8 @@ def callProfit(spotPrice,strikePrice,optionPremium,percent=False):
     profit=0
     if spotPrice>strikePrice:
       profit=spotPrice-strikePrice-optionPremium
-    profit=-optionPremium
+    else:
+      profit=-optionPremium
     if percent:
       return profit/optionPremium
     return profit
