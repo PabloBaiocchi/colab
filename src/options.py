@@ -1,39 +1,52 @@
 import datetime as dt
+import matplotlib.pyplot as plt
+import numpy as np
 
 from config import optionExpirationDates
-from util import firstLastDigit
+from util import firstLastDigit,apply,constantFunction,merge
 
-def callProfit(spotPrice,strikePrice,optionPremium):
+def callProfit(spotPrice,strikePrice,optionPremium,percent=False):
+    profit=0
     if spotPrice>strikePrice:
-      return spotPrice-strikePrice-optionPremium
-    return -optionPremium
+      profit=spotPrice-strikePrice-optionPremium
+    else:
+      profit=-optionPremium
+    if percent:
+      return profit/optionPremium
+    return profit
 
-def putProfit(spotPrice,strikePrice,optionPremium):
+def putProfit(spotPrice,strikePrice,optionPremium,percent=False):
+    profit=0
     if spotPrice<strikePrice:
-      return strikePrice-spotPrice-optionPremium
-    return -optionPremium 
+      profit=strikePrice-spotPrice-optionPremium
+    else:
+      profit=-optionPremium 
+    if percent:
+      return profit/optionPremium
+    return profit
+    
 
-def optionProfit(spotPrice,strikePrice,premium,oType):
+def optionProfit(spotPrice,strikePrice,premium,oType,percent=False):
   if oType=='call':
-    return callProfit(spotPrice,strikePrice,premium)
+    return callProfit(spotPrice,strikePrice,premium,percent)
   if oType=='put':
-    return putProfit(spotPrice,strikePrice,premium)
+    return putProfit(spotPrice,strikePrice,premium,percent)
 
-def callProfitFunction(strikePrice,optionPremium):
+def callProfitFunction(strikePrice,optionPremium,percent=False):
     def func(spotPrice):
-        return callProfit(spotPrice,strikePrice,optionPremium)
+        return callProfit(spotPrice,strikePrice,optionPremium,percent)
     return func
 
-def putProfitFunction(strikePrice,optionPremium):
+def putProfitFunction(strikePrice,optionPremium,percent=False):
     def func(spotPrice):
-        return putProfit(spotPrice,strikePrice,optionPremium)
+        return putProfit(spotPrice,strikePrice,optionPremium,percent)
     return func
 
-def profitFunction(strikePrice,optionPremium,oType):
+def profitFunction(strikePrice,optionPremium,oType,percent=False):
     if oType=='call':
-        return callProfitFunction(strikePrice,optionPremium)
+        return callProfitFunction(strikePrice,optionPremium,percent)
     if oType=='put':
-        return putProfitFunction(strikePrice,optionPremium)
+        return putProfitFunction(strikePrice,optionPremium,percent)
 
 def nyPriceFunction(ratio,baPrice):
   def function(ccl):
@@ -75,3 +88,46 @@ def fillOut(optionsDf):
   optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
   optionsDf['datetime']=optionsDf.datetime.apply(lambda datestring: dt.datetime.strptime(datestring[:datestring.rindex(':')],'%Y-%m-%d %H:%M'))
 
+def graph(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
+  plt.figure(figsize=figsize)
+
+  spotPrices=np.linspace(start,stop,stop-start)
+
+  for row in optionsDf.iterrows():
+    strikePrice=row[1].strike_price
+    premium=row[1].premium
+    oType=row[1].type
+    name=row[1][0]
+    profitFunc=profitFunction(strikePrice,premium,oType,percent)
+    profit=apply(profitFunc,spotPrices)
+    plt.plot(spotPrices,profit,label=name)
+  
+  plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
+  
+  plt.legend()
+  plt.grid()
+
+def graphCombined(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
+  plt.figure(figsize=figsize)
+
+  spotPrices=np.linspace(start,stop,stop-start)
+  grossProfit=[0] * len(spotPrices)
+  totalPremium=0
+
+  for row in optionsDf.iterrows():
+    strikePrice=row[1].strike_price
+    premium=row[1].premium
+    totalPremium=totalPremium+premium
+    oType=row[1].type
+    profitFunc=profitFunction(strikePrice,premium,oType)
+    optionProfit=apply(profitFunc,spotPrices)
+    grossProfit=merge(grossProfit,optionProfit)
+  
+  if percent:
+    grossProfit=np.array(grossProfit)
+    plt.plot(spotPrices,grossProfit/totalPremium)
+  else:
+    plt.plot(spotPrices,grossProfit)
+  plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
+
+  plt.grid()
