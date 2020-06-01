@@ -130,3 +130,38 @@ def graphCombined(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
   plt.plot(spotPrices,apply(constantFunction(0),spotPrices),c='black')
 
   plt.grid()
+
+def percentProfit(option1,option2,spotPrices):
+  profitFunction1=profitFunction(option1.strike_price,option1.premium,option1.type)
+  profitFunction2=profitFunction(option2.strike_price,option2.premium,option2.type)
+  profits1=np.array(apply(profitFunction1,spotPrices))
+  profits2=np.array(apply(profitFunction2,spotPrices))
+  return (profits1+profits2)/(option1.premium+option2.premium)
+
+def optionCombinations(df,spotPrices):
+  calls=df[df.type=='call']
+  puts=df[df.type=='put']
+
+  output=[]
+
+  for callRow in calls.iterrows(): 
+    call=callRow[1]
+    for putRow in puts.iterrows():
+      put=putRow[1]
+      profits=percentProfit(call,put,spotPrices)
+      name=f"{call.option}_{put.option}"
+      for i in range(len(spotPrices)):
+        output.append([name,spotPrices[i],profits[i]])
+  
+  outputDf=pd.DataFrame(output)
+  outputDf.columns=['options','spot_price','perc_profit']
+  return outputDf
+
+def optionCombinationAnalysis(df):
+  output=[]
+  for combo in df.options.unique():
+    comboDf=df[df.options==combo]
+    output.append([combo,comboDf.perc_profit.min(),comboDf.perc_profit.mean()])
+  outputDf=pd.DataFrame(output)
+  outputDf.columns=['options','min_perc_profit','avg_perc_profit']
+  return outputDf
