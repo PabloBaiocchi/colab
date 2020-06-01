@@ -81,9 +81,9 @@ def getType(optionName):
     return 'put'
 
 def fillOut(optionsDf):
-  optionsDf['exp_date']=optionsDf.name.apply(lambda x:getExpirationDate(x))
-  optionsDf['strike_price']=optionsDf.name.apply(lambda x:getStrikePrice(x))
-  optionsDf['type']=optionsDf.name.apply(lambda x:getType(x))
+  optionsDf['exp_date']=optionsDf.option.apply(lambda x:getExpirationDate(x))
+  optionsDf['strike_price']=optionsDf.option.apply(lambda x:getStrikePrice(x))
+  optionsDf['type']=optionsDf.option.apply(lambda x:getType(x))
   optionsDf['break_even']=optionsDf.apply(lambda row:getBreakEven(row['strike_price'],row['premium'],row['type']),axis=1)
   optionsDf['exp_month']=optionsDf.exp_date.apply(lambda x: x.month)
   optionsDf['datetime']=optionsDf.datetime.apply(lambda datestring: dt.datetime.strptime(datestring[:datestring.rindex(':')],'%Y-%m-%d %H:%M'))
@@ -97,7 +97,7 @@ def graph(optionsDf,figsize=(20,13),start=0,stop=200,percent=False):
     strikePrice=row[1].strike_price
     premium=row[1].premium
     oType=row[1].type
-    name=row[1][0]
+    name=row[1].option
     profitFunc=profitFunction(strikePrice,premium,oType,percent)
     profit=apply(profitFunc,spotPrices)
     plt.plot(spotPrices,profit,label=name)
