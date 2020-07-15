@@ -21,12 +21,12 @@ def getSpreadsheet(spreadsheetUrl,sheetName):
     frame=frame.dropna(axis='columns',how='all')
     return frame
 
-def importGoogleDriveFile(fileName):
+def importGoogleDriveFile(directoryCode,fileName):
   auth.authenticate_user()
   gauth = GoogleAuth()
   gauth.credentials = GoogleCredentials.get_application_default()
   drive = GoogleDrive(gauth)
-  file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+  file_list = drive.ListFile({'q': "'${directoryCode}' in parents and trashed=false"}).GetList()
   for file in file_list:
     if file['title']==fileName:
       file.GetContentFile(fileName)
