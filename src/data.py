@@ -13,13 +13,13 @@ def getSpreadsheetAuth():
   spreadsheetAuth=gspread.authorize(GoogleCredentials.get_application_default())
   return spreadsheetAuth
 
-def getSpreadsheet(spreadsheetUrl,sheetName):
-    spreadsheetAuth=getSpreadsheetAuth()
-    sheet=spreadsheetAuth.open_by_url(spreadsheetUrl)
-    frame=get_as_dataframe(sheet.worksheet(sheetName))
-    frame=frame.dropna(how='all')
-    frame=frame.dropna(axis='columns',how='all')
-    return frame
+def getSpreadsheetFrame(sheet_url,sheet_name):
+  spreadsheetAuth=getSpreadsheetAuth()
+  sheet=spreadsheetAuth.open_by_url(sheet_url)
+  frame=get_as_dataframe(sheet.worksheet(sheet_name))
+  frame=frame.dropna(how='all')
+  frame=frame.dropna(axis='columns',how='all')
+  return frame
 
 def importGoogleDriveFile(directoryCode,fileName):
   auth.authenticate_user()
