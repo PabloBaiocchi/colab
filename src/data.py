@@ -26,8 +26,12 @@ def importGoogleDriveFile(directoryCode,fileName):
   gauth = GoogleAuth()
   gauth.credentials = GoogleCredentials.get_application_default()
   drive = GoogleDrive(gauth)
-  file_list = drive.ListFile({'q': "'${directoryCode}' in parents and trashed=false"}).GetList()
+  file_list = drive.ListFile({'q': f"'{directoryCode}' in parents and trashed=false"}).GetList()
   for file in file_list:
     if file['title']==fileName:
       file.GetContentFile(fileName)
+
+def getGoogleDriveFrame(directoryCode,fileName):
+  importGoogleDriveFile(directoryCode,fileName)
+  return pd.read_csv(fileName)
 
