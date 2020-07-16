@@ -28,3 +28,5 @@ def splitDatetime(df):
 
 def convertToFloat(numString):
   return float(numString.replace(',','.')) 
+
+balanzScrapeFileColumns=['ticker','plazo','max','min','open','last_op','total_volume','datetime','cc0','cc1','cc2','cc3','cc4','cv0','cv1','cv2','cv3','cv4','pc0','pc1','pc2','pc3','pc4','pv0','pv1','pv2','pv3','pv4']
