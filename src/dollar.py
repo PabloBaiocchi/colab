@@ -14,6 +14,7 @@ def getDollarMayoristaFrame(startDate=dt.date(2019,12,10),endDate=dt.date.today(
     prices=getDollarMayoristaJson(startDate,endDate)[1:]
     df=pd.DataFrame(prices)
     df.columns=['date','compra','venta']
+    df['date']=pd.to_datetime(df.date,format='%d-%m-%Y')
     df['compra']=df['compra'].apply(lambda x: convertToFloat(x))
     df['venta']=df['venta'].apply(lambda x: convertToFloat(x))
     return df
