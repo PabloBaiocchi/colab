@@ -25,3 +25,6 @@ def firstLastDigit(myString):
 def splitDatetime(df):
   df['date']=df.datetime.apply(lambda timestamp: timestamp.date())
   df['minutes']=df.datetime.apply(lambda timestamp: timestamp.hour*60+timestamp.minute)
+
+def convertToFloat(numString):
+  return float(numString.replace(',','.')) 
