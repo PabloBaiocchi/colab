@@ -57,5 +57,7 @@ rofexExpirations={
     'Jul21':dt.date(2021,7,30),
     'Ago21':dt.date(2021,8,31),
     'Sep21':dt.date(2021,9,30),
-    'Oct21':dt.date(2021,10,29)
+    'Oct21':dt.date(2021,10,29),
+    'Nov21':dt.date(2021,11,30),
+    'Dic21':dt.date(2021,12,30)
 }
