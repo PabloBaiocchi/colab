@@ -2,7 +2,8 @@ import pandas as pd
 import datetime as dt
 import requests
 
-from util import convertToFloat
+from util import convertToFloat, balanzScrapeFileColumns
+from data import getGoogleDriveFrame
 
 def getDollarMayoristaJson(start_date,end_date):
     date_format='%d-%m-%Y'
@@ -18,6 +19,12 @@ def getDollarMayoristaFrame(startDate=dt.date(2019,12,10),endDate=dt.date.today(
     df['compra']=df['compra'].apply(lambda x: convertToFloat(x))
     df['venta']=df['venta'].apply(lambda x: convertToFloat(x))
     return df
+
+def getDollarFuturesFrame(directoryCode='1OQraYYXx35IEjb6mV48pGzP-ieUFEokq',fileName='ArgFutures.txt'):
+    futuresFrame=getGoogleDriveFrame(directoryCode,fileName)
+    futuresFrame.columns=balanzScrapeFileColumns
+    dollarMayoristaFutures=getLatestDollarMayoristaFutures(futuresFrame)
+    return dollarMayoristaFutures
 
 def getLatestPrice(ticker,frame):
     tempDf=frame[frame.ticker==ticker]
@@ -49,5 +56,6 @@ rofexExpirations={
     'Jun21':dt.date(2021,6,30),
     'Jul21':dt.date(2021,7,30),
     'Ago21':dt.date(2021,8,31),
-    'Sep21':dt.date(2021,9,30)
+    'Sep21':dt.date(2021,9,30),
+    'Oct21':dt.date(2021,10,29)
 }
