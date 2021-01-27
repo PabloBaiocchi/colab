@@ -16,7 +16,7 @@ def getSpreadsheetAuth():
 def getSpreadsheetFrame(sheet_url,sheet_name):
   spreadsheetAuth=getSpreadsheetAuth()
   sheet=spreadsheetAuth.open_by_url(sheet_url)
-  frame=get_as_dataframe(sheet.worksheet(sheet_name),options={float_precision='high'}) #changes here
+  frame=get_as_dataframe(sheet.worksheet(sheet_name),float_precision='high') #changes here
   frame=frame.dropna(how='all')
   frame=frame.dropna(axis='columns',how='all')
   return frame
